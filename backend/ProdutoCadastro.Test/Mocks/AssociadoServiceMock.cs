@@ -28,15 +28,24 @@ public static class AssociadoServiceMock
         mock.Setup(service => service.ObterPeloIdAssociadoAsync(It.IsAny<int>()))
             .ReturnsAsync((int id) => id == 1 ? associadoFake : null);
 
-        // Simular método de criação
+        // Simular método de criação - retorna Task.CompletedTask (sem valor)
         mock.Setup(service => service.CriarAssociadoAsync(It.IsAny<Associado>()))
-            .Returns(Task.CompletedTask);
+            .Returns(async (Associado associado) =>
+            {
+                // Condições para lançar um erro de validação (Bad Request)
+                if (associado.CPF.ToString().Length != 11 || associado.Placa.Length != 7 || associado.Nome.Length > 40)
+                {
+                    throw new ArgumentException("Bad Request: CPF ou Placa ou Nome inválidos.");
+                }
 
-        // Simular método de atualização de endereço
+                await Task.CompletedTask;
+            });
+
+        // Simular método de atualização de endereço - retorna Task.CompletedTask (sem valor)
         mock.Setup(service => service.AtualizarEnderecoAsync(It.IsAny<int>(), It.IsAny<string>()))
             .Returns(Task.CompletedTask);
 
-        // Simular método de deletar associado
+        // Simular método de deletar associado - retorna Task.CompletedTask (sem valor)
         mock.Setup(service => service.DeletarAssociadoAsync(It.IsAny<int>()))
             .Returns(Task.CompletedTask);
 

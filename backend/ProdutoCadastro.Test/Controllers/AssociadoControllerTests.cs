@@ -16,7 +16,7 @@ public class AssociadoControllerTests
         _controller = new AssociadoController(_associadoServiceMock.Object);
     }
 
-    // 🔹 Teste: Autenticação bem-sucedida
+    // Teste: Autenticação bem-sucedida
     [Fact]
     public async Task Autenticar_DeveRetornarOk_QuandoAssociadoExiste()
     {
@@ -28,7 +28,7 @@ public class AssociadoControllerTests
         Assert.NotNull(okResult.Value);
     }
 
-    // 🔹 Teste: Autenticação falha com credenciais inválidas
+    // Teste: Autenticação falha com credenciais inválidas
     [Fact]
     public async Task Autenticar_DeveRetornarUnauthorized_QuandoAssociadoNaoExiste()
     {
@@ -39,17 +39,25 @@ public class AssociadoControllerTests
         Assert.IsType<UnauthorizedObjectResult>(result);
     }
 
-    // 🔹 Teste: Atualização de endereço bem-sucedida
+    // Teste: Atualização de endereço bem-sucedida
     [Fact]
     public async Task AtualizarEndereco_DeveRetornarOk_QuandoEnderecoForAtualizado()
     {
+        // Arrange
+        _associadoServiceMock
+            .Setup(s => s.AtualizarEnderecoAsync(It.IsAny<int>(), It.IsAny<string>()))
+            .Returns(Task.FromResult(true));
+
         var result = await _controller.AtualizarEndereco(1, "Novo Endereço 123");
 
         var okResult = Assert.IsType<OkObjectResult>(result);
-        Assert.Equal("Endereço atualizado com sucesso.", ((dynamic)okResult.Value).message);
+
+        var response = okResult.Value.GetType().GetProperty("message").GetValue(okResult.Value, null);
+
+        Assert.Equal("Endereço atualizado com sucesso.", response);
     }
 
-    // 🔹 Teste: Atualização falha se o endereço estiver vazio
+    // Teste: Atualização falha se o endereço estiver vazio
     [Fact]
     public async Task AtualizarEndereco_DeveRetornarBadRequest_SeEnderecoForVazio()
     {
@@ -58,7 +66,7 @@ public class AssociadoControllerTests
         Assert.IsType<BadRequestObjectResult>(result);
     }
 
-    // 🔹 Teste: Criar associado com sucesso
+    // Teste: Criar associado com sucesso
     [Fact]
     public async Task Criar_DeveRetornarCreated_QuandoAssociadoForCriado()
     {
@@ -76,7 +84,7 @@ public class AssociadoControllerTests
         Assert.IsType<CreatedAtActionResult>(result);
     }
 
-    // 🔹 Teste: Criar associado falha se já existir
+    // Teste: Criar associado falha se já existir
     [Fact]
     public async Task Criar_DeveRetornarConflict_SeAssociadoJaExistir()
     {
@@ -94,7 +102,7 @@ public class AssociadoControllerTests
         Assert.IsType<ConflictObjectResult>(result);
     }
 
-    // 🔹 Teste: Criar associado falha se os dados estiverem incompletos
+    // Teste: Criar associado falha se os dados estiverem com valores a mais
     [Fact]
     public async Task Criar_DeveRetornarBadRequest_SeDadosForemInvalidos()
     {
@@ -112,26 +120,28 @@ public class AssociadoControllerTests
         Assert.IsType<BadRequestObjectResult>(result);
     }
 
-    // 🔹 Teste: Deletar associado com sucesso
+    // Teste: Deletar associado com sucesso
     [Fact]
     public async Task Deletar_DeveRetornarOk_QuandoAssociadoForExcluido()
     {
         var result = await _controller.Deletar(1);
 
         var okResult = Assert.IsType<OkObjectResult>(result);
-        Assert.Equal("Associado excluído com sucesso.", ((dynamic)okResult.Value).message);
+        var response = okResult.Value.GetType().GetProperty("message").GetValue(okResult.Value, null);
+
+        Assert.Equal("Associado excluído com sucesso.", response);
     }
 
-    // 🔹 Teste: Deletar falha se o associado não existir
+    // Teste: Deletar - falha se o associado não existir
     [Fact]
     public async Task Deletar_DeveRetornarNotFound_SeAssociadoNaoExistir()
     {
-        var result = await _controller.Deletar(999); // ID não existente
+        var result = await _controller.Deletar(999);
 
         Assert.IsType<NotFoundObjectResult>(result);
     }
 
-    // 🔹 Teste: Obter associado por ID com sucesso
+    // Teste: Obter associado por ID com sucesso
     [Fact]
     public async Task ObterPorId_DeveRetornarOk_QuandoAssociadoForEncontrado()
     {
@@ -141,11 +151,11 @@ public class AssociadoControllerTests
         Assert.NotNull(okResult.Value);
     }
 
-    // 🔹 Teste: Obter associado falha se ID não existir
+    // Teste: Obter associado falha se ID não existir
     [Fact]
     public async Task ObterPorId_DeveRetornarNotFound_SeAssociadoNaoForEncontrado()
     {
-        var result = await _controller.ObterPorId(999); // ID não existente
+        var result = await _controller.ObterPorId(999);
 
         Assert.IsType<NotFoundObjectResult>(result);
     }

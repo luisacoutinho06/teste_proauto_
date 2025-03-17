@@ -2,6 +2,7 @@
 using ProautoCadastro.Data;
 using ProdutoCadastro.Data.Context;
 using ProdutoCadastro.Domain.Entities;
+using System.ComponentModel.DataAnnotations;
 
 namespace ProdutoCadastro.Data.Repositories
 {
@@ -27,6 +28,17 @@ namespace ProdutoCadastro.Data.Repositories
 
         public async Task CriarAssociadoAsync(Associado novoAssociado)
         {
+            var context = new ValidationContext(novoAssociado);
+            var results = new List<ValidationResult>();
+
+            bool isValid = Validator.TryValidateObject(novoAssociado, context, results, true); _context.Associados.Add(novoAssociado);
+
+            if (!isValid)
+            {
+                var erros = string.Join(", ", results.Select(r => r.ErrorMessage));
+                throw new Exception($"Erro de validação: {erros}");
+            }
+
             _context.Associados.Add(novoAssociado);
             await _context.SaveChangesAsync();
         }
