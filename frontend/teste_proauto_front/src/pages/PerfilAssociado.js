@@ -12,7 +12,7 @@ const PerfilAssociado = () => {
 
   const [idState] = useState(id);
   const [nomeState, setNome] = useState(nome || "");
-  const [cpfState, setCpf] = useState(cpf || "");
+  const [cpfState, setCpf] = useState("");
   const [placaState, setPlaca] = useState(placa || "");
   const [enderecoState, setEndereco] = useState(endereco || "");
   const [telefoneState, setTelefone] = useState(telefone || "");
@@ -21,32 +21,53 @@ const PerfilAssociado = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    setNome(nome);
-    setCpf(cpf);
-    setPlaca(placa);
-    setEndereco(endereco);
-    setTelefone(telefone);
-  }, [nome, cpf, placa, endereco, telefone]);
+    if (cpf) {
+      const cpfMenorQueOnze = cpf.toString().length < 11 ? true : false;
+
+      const formattedCpf = cpf.toString().length < 11 ? `0${cpf}` : cpf;
+
+      let cpfMasked = cpf;
+      if (cpfMenorQueOnze) {
+        cpfMasked = formattedCpf.replace(
+          /(\d{3})(\d{3})(\d{3})(\d{2})/,
+          "$1.$2.$3-$4"
+        );
+      }
+
+      setCpf(cpfMasked);
+    }
+
+    const savedEndereco = localStorage.getItem(`endereco-${idState}`);
+    if (savedEndereco) {
+      setEndereco(savedEndereco);
+    }
+  }, [idState, cpf]);
 
   const handleEnderecoChange = (e) => {
-    setEndereco(e.target.value);
+    const newEndereco = e.target.value;
+    setEndereco(newEndereco);
+    console.log("Endereço atualizado: ", newEndereco);
+
+    localStorage.setItem(`endereco-${idState}`, newEndereco);
   };
 
   const handleEndereco = async () => {
-    if (!endereco) {
+    if (!enderecoState) {
       setErrorMessage("É obrigatório inserir o endereço!");
       return;
     }
     try {
-      console.log(idState, endereco);
+      console.log(idState, enderecoState);
 
-      await atualizarEndereco(idState, endereco);
+      await atualizarEndereco(idState, enderecoState);
 
       Swal.fire({
         title: "Endereço salvo com sucesso!",
         icon: "success",
         confirmButtonText: "OK",
       });
+
+      localStorage.setItem(`endereco-${idState}`, enderecoState);
     } catch (error) {
       setErrorMessage("Erro ao salvar o endereço!");
       console.error(error);
