@@ -1,8 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
 
 namespace ProdutoCadastro.Domain.Entities
 {
-    public class Associado
+    public class Associado : IValidatableObject
     {
         [Key]
         public int Id { get; set; }
@@ -10,7 +11,7 @@ namespace ProdutoCadastro.Domain.Entities
         [Required, StringLength(40)]
         public required string Nome { get; set; }
 
-        [Required, StringLength(11)]
+        [Required]
         public required long CPF { get; set; }
 
         [Required, StringLength(7)]
@@ -19,28 +20,29 @@ namespace ProdutoCadastro.Domain.Entities
         [Required]
         public required string Endereco { get; set; }
 
-        [Required, StringLength(11)]
+        [Required]
         public required long Telefone { get; set; }
-
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            if (Nome.ToString().Length > 40)
+            if (!string.IsNullOrEmpty(Nome) && Nome.Length > 40)
             {
-                yield return new ValidationResult("O Nome deve possuir no máximo 40 caracteres", new[] { nameof(CPF) });
+                yield return new ValidationResult("O Nome deve possuir no máximo 40 caracteres", new[] { nameof(Nome) });
             }
 
-            if (CPF.ToString().Length != 11)
+            string cpfString = CPF.ToString();
+            if (cpfString.Length != 11)
             {
                 yield return new ValidationResult("O CPF deve conter exatamente 11 dígitos.", new[] { nameof(CPF) });
             }
 
-            if (Telefone.ToString().Length != 11)
+            string telefoneString = Telefone.ToString();
+            if (telefoneString.Length != 11)
             {
                 yield return new ValidationResult("O telefone deve conter exatamente 11 dígitos.", new[] { nameof(Telefone) });
             }
 
-            if (Placa.Length != 7)
+            if (string.IsNullOrEmpty(Placa) || Placa.Length != 7)
             {
                 yield return new ValidationResult("A placa deve conter exatamente 7 caracteres.", new[] { nameof(Placa) });
             }

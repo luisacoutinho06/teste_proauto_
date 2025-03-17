@@ -12,7 +12,8 @@ namespace ProdutoCadastro.Data.Repositories
 
         public async Task<Associado?> ObterPorCpfEPlacaAsync(string cpf, string placa)
         {
-            return await _context.Associados.FirstOrDefaultAsync(a => a.CPF == long.Parse(cpf) && a.Placa == placa);
+            long cpfFormatado = Int64.Parse(cpf);
+            return await _context.Associados.FirstOrDefaultAsync(a => a.CPF == cpfFormatado && a.Placa == placa);
         }
 
         public async Task AtualizarEnderecoAsync(Associado associado)
@@ -31,7 +32,7 @@ namespace ProdutoCadastro.Data.Repositories
             var context = new ValidationContext(novoAssociado);
             var results = new List<ValidationResult>();
 
-            bool isValid = Validator.TryValidateObject(novoAssociado, context, results, true); _context.Associados.Add(novoAssociado);
+            bool isValid = Validator.TryValidateObject(novoAssociado, context, results, true);
 
             if (!isValid)
             {
