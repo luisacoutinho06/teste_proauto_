@@ -31,7 +31,7 @@ namespace ProdutoCadastro.Domain.Entities
             }
 
             string cpfString = CPF.ToString();
-            if (cpfString.Length != 11)
+            if (cpfString.Length < 10 && cpfString.Length > 11)
             {
                 yield return new ValidationResult("O CPF deve conter exatamente 11 dígitos.", new[] { nameof(CPF) });
             }
