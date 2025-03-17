@@ -11,6 +11,7 @@ namespace ProdutoCadastro.Data.Repositories
 
         public async Task<Associado?> ObterPorCpfEPlacaAsync(string cpf, string placa)
         {
+            cpf = RemoverMascara(cpf);
             return await _context.Associados.FirstOrDefaultAsync(a => a.CPF == cpf && a.Placa == placa);
         }
 
@@ -27,6 +28,9 @@ namespace ProdutoCadastro.Data.Repositories
 
         public async Task CriarAssociadoAsync(Associado novoAssociado)
         {
+            novoAssociado.CPF = RemoverMascara(novoAssociado.CPF);
+            novoAssociado.Telefone = RemoverMascara(novoAssociado.Telefone);
+
             _context.Associados.Add(novoAssociado);
             await _context.SaveChangesAsync();
         }
@@ -39,6 +43,12 @@ namespace ProdutoCadastro.Data.Repositories
                 _context.Associados.Remove(associado);
                 await _context.SaveChangesAsync();
             }
+        }
+
+
+        private string RemoverMascara(string valor)
+        {
+            return string.IsNullOrEmpty(valor) ? valor : new string(valor.Where(char.IsDigit).ToArray());
         }
     }
 }

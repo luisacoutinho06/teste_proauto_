@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using ProautoCadastro.API.Models;
 using ProdutoCadastro.API.Models;
 using ProdutoCadastro.Domain.Entities;
@@ -41,6 +42,11 @@ namespace ProdutoCadastro.API.Controllers
         public async Task<IActionResult> Criar([FromBody] AssociadoCreate novoAssociado)
         {
             if (novoAssociado == null)
+                return BadRequest("Dados do associado são obrigatórios.");
+
+            if (string.IsNullOrEmpty(novoAssociado.CPF) || string.IsNullOrEmpty(novoAssociado.Nome) ||
+                string.IsNullOrEmpty(novoAssociado.Placa) || string.IsNullOrEmpty(novoAssociado.Endereco) 
+                || string.IsNullOrEmpty(novoAssociado.Telefone))
                 return BadRequest("Dados do associado são obrigatórios.");
 
             var associadoExistente = await _associadoService.ObterDadosAsync(novoAssociado.CPF, novoAssociado.Placa);

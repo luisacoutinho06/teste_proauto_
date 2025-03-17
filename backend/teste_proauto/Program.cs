@@ -1,5 +1,9 @@
 using Microsoft.EntityFrameworkCore;
+using ProautoCadastro.Data;
 using ProdutoCadastro.Data.Context;
+using ProdutoCadastro.Data.Repositories;
+using ProdutoCadastro.Services.Interface;
+using ProdutoCadastro.Services.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +13,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddControllersWithViews();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddScoped<IAssociadoService, AssociadoService>();
+builder.Services.AddScoped<IAssociadoRepository, AssociadoRepository>();
 
 builder.Services.AddCors(options =>
 {
