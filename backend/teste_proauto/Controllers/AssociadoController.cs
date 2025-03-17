@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 using ProautoCadastro.API.Models;
 using ProdutoCadastro.API.Models;
 using ProdutoCadastro.Domain.Entities;
@@ -19,7 +18,7 @@ namespace ProdutoCadastro.API.Controllers
             if (request == null || string.IsNullOrEmpty(request.CPF) || string.IsNullOrEmpty(request.Placa))
                 return BadRequest("CPF e Placa são obrigatórios.");
 
-            var associado = await _associadoService.ObterDadosAsync(request.CPF, request.Placa);
+            var associado = await _associadoService.ObterPorCpfEPlacaAsync(RemoverMascara(request.CPF), request.Placa);
 
             if (associado == null)
                 return Unauthorized(new { message = "CPF ou Placa inválidos." });
@@ -45,11 +44,11 @@ namespace ProdutoCadastro.API.Controllers
                 return BadRequest("Dados do associado são obrigatórios.");
 
             if (string.IsNullOrEmpty(novoAssociado.CPF) || string.IsNullOrEmpty(novoAssociado.Nome) ||
-                string.IsNullOrEmpty(novoAssociado.Placa) || string.IsNullOrEmpty(novoAssociado.Endereco) 
+                string.IsNullOrEmpty(novoAssociado.Placa) || string.IsNullOrEmpty(novoAssociado.Endereco)
                 || string.IsNullOrEmpty(novoAssociado.Telefone))
                 return BadRequest("Dados do associado são obrigatórios.");
 
-            var associadoExistente = await _associadoService.ObterDadosEValidarCPFePlacaAsync(novoAssociado.CPF, novoAssociado.Placa);
+            var associadoExistente = await _associadoService.ObterDadosEValidarCPFePlacaAsync(RemoverMascara(novoAssociado.CPF), novoAssociado.Placa);
             if (associadoExistente != null)
                 return Conflict(new { message = "Associado já existe." });
 
@@ -57,10 +56,10 @@ namespace ProdutoCadastro.API.Controllers
             var associadoEntity = new Associado
             {
                 Nome = novoAssociado.Nome,
-                CPF = novoAssociado.CPF,
+                CPF = long.Parse(RemoverMascara(novoAssociado.CPF)),
                 Placa = novoAssociado.Placa,
                 Endereco = novoAssociado.Endereco,
-                Telefone = novoAssociado.Telefone
+                Telefone = long.Parse(RemoverMascara(novoAssociado.Telefone))
             };
 
             await _associadoService.CriarAssociadoAsync(associadoEntity);
@@ -88,6 +87,12 @@ namespace ProdutoCadastro.API.Controllers
                 return NotFound(new { message = "Associado não encontrado." });
 
             return Ok(associado);
+        }
+
+
+        private string RemoverMascara(string valor)
+        {
+            return string.IsNullOrEmpty(valor) ? valor : new string(valor.Where(char.IsDigit).ToArray());
         }
     }
 }

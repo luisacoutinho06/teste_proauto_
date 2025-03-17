@@ -11,7 +11,7 @@ namespace ProdutoCadastro.Domain.Entities
         public required string Nome { get; set; }
 
         [Required, StringLength(11)]
-        public required string CPF { get; set; }
+        public required long CPF { get; set; }
 
         [Required, StringLength(7)]
         public required string Placa { get; set; }
@@ -20,6 +20,6 @@ namespace ProdutoCadastro.Domain.Entities
         public required string Endereco { get; set; }
 
         [Required, StringLength(11)]
-        public required string Telefone { get; set; }
+        public required long Telefone { get; set; }
     }
 }
