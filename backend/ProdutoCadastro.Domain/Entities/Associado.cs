@@ -19,7 +19,7 @@ namespace ProdutoCadastro.Domain.Entities
         [Required]
         public required string Endereco { get; set; }
 
-        public string? Telefone { get; set; }
+        [Required, StringLength(11)]
+        public required string Telefone { get; set; }
     }
-
 }

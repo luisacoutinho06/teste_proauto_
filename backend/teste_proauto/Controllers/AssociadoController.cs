@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using ProautoCadastro.API.Models;
 using ProdutoCadastro.API.Models;
 using ProdutoCadastro.Domain.Entities;
@@ -29,7 +30,7 @@ namespace ProdutoCadastro.API.Controllers
         [HttpPut("atualizar-endereco/{id}")]
         public async Task<IActionResult> AtualizarEndereco(int id, [FromBody] string novoEndereco)
         {
-            if (string.IsNullOrEmpty(novoEndereco))
+            if (string.IsNullOrEmpty(novoEndereco) || id <= 0)
                 return BadRequest("Novo endereço não pode ser vazio.");
 
             await _associadoService.AtualizarEnderecoAsync(id, novoEndereco);
@@ -43,7 +44,12 @@ namespace ProdutoCadastro.API.Controllers
             if (novoAssociado == null)
                 return BadRequest("Dados do associado são obrigatórios.");
 
-            var associadoExistente = await _associadoService.ObterDadosAsync(novoAssociado.CPF, novoAssociado.Placa);
+            if (string.IsNullOrEmpty(novoAssociado.CPF) || string.IsNullOrEmpty(novoAssociado.Nome) ||
+                string.IsNullOrEmpty(novoAssociado.Placa) || string.IsNullOrEmpty(novoAssociado.Endereco) 
+                || string.IsNullOrEmpty(novoAssociado.Telefone))
+                return BadRequest("Dados do associado são obrigatórios.");
+
+            var associadoExistente = await _associadoService.ObterDadosEValidarCPFePlacaAsync(novoAssociado.CPF, novoAssociado.Placa);
             if (associadoExistente != null)
                 return Conflict(new { message = "Associado já existe." });
 

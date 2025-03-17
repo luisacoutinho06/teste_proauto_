@@ -9,5 +9,6 @@ namespace ProautoCadastro.Data
         Task AtualizarEnderecoAsync(Associado associado);
         Task CriarAssociadoAsync(Associado novoAssociado);
         Task DeletarAssociadoAsync(int id);
+        Task<Associado?> ObterDadosEValidarCPFePlacaAsync(string cpf, string placa);
     }
 }
