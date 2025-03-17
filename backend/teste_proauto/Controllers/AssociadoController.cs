@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 using ProautoCadastro.API.Models;
 using ProdutoCadastro.API.Models;
 using ProdutoCadastro.Domain.Entities;
@@ -16,78 +15,118 @@ namespace ProdutoCadastro.API.Controllers
         [HttpPost("autenticar")]
         public async Task<IActionResult> Autenticar([FromBody] LoginRequest request)
         {
-            if (request == null || string.IsNullOrEmpty(request.CPF) || string.IsNullOrEmpty(request.Placa))
-                return BadRequest("CPF e Placa são obrigatórios.");
+            try
+            {
+                if (request == null || string.IsNullOrEmpty(request.CPF) || string.IsNullOrEmpty(request.Placa))
+                    return BadRequest("CPF e Placa são obrigatórios.");
 
-            var associado = await _associadoService.ObterDadosAsync(request.CPF, request.Placa);
+                var associado = await _associadoService.ObterPorCpfEPlacaAsync(RemoverMascara(request.CPF), request.Placa);
 
-            if (associado == null)
-                return Unauthorized(new { message = "CPF ou Placa inválidos." });
+                if (associado == null)
+                    return Unauthorized(new { message = "CPF ou Placa inválidos." });
 
-            return Ok(associado);
+                return Ok(associado);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPut("atualizar-endereco/{id}")]
         public async Task<IActionResult> AtualizarEndereco(int id, [FromBody] string novoEndereco)
         {
-            if (string.IsNullOrEmpty(novoEndereco) || id <= 0)
-                return BadRequest("Novo endereço não pode ser vazio.");
+            try
+            {
+                if (string.IsNullOrEmpty(novoEndereco) || id <= 0)
+                    return BadRequest("Novo endereço não pode ser vazio.");
 
-            await _associadoService.AtualizarEnderecoAsync(id, novoEndereco);
+                await _associadoService.AtualizarEnderecoAsync(id, novoEndereco);
 
-            return Ok(new { message = "Endereço atualizado com sucesso." });
+                return Ok(new { message = "Endereço atualizado com sucesso." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost("criar")]
         public async Task<IActionResult> Criar([FromBody] AssociadoCreate novoAssociado)
         {
-            if (novoAssociado == null)
-                return BadRequest("Dados do associado são obrigatórios.");
-
-            if (string.IsNullOrEmpty(novoAssociado.CPF) || string.IsNullOrEmpty(novoAssociado.Nome) ||
-                string.IsNullOrEmpty(novoAssociado.Placa) || string.IsNullOrEmpty(novoAssociado.Endereco) 
-                || string.IsNullOrEmpty(novoAssociado.Telefone))
-                return BadRequest("Dados do associado são obrigatórios.");
-
-            var associadoExistente = await _associadoService.ObterDadosEValidarCPFePlacaAsync(novoAssociado.CPF, novoAssociado.Placa);
-            if (associadoExistente != null)
-                return Conflict(new { message = "Associado já existe." });
-
-
-            var associadoEntity = new Associado
+            try
             {
-                Nome = novoAssociado.Nome,
-                CPF = novoAssociado.CPF,
-                Placa = novoAssociado.Placa,
-                Endereco = novoAssociado.Endereco,
-                Telefone = novoAssociado.Telefone
-            };
+                if (novoAssociado == null)
+                    return BadRequest("Dados do associado são obrigatórios.");
 
-            await _associadoService.CriarAssociadoAsync(associadoEntity);
+                if (string.IsNullOrEmpty(novoAssociado.CPF) || string.IsNullOrEmpty(novoAssociado.Nome) ||
+                    string.IsNullOrEmpty(novoAssociado.Placa) || string.IsNullOrEmpty(novoAssociado.Endereco)
+                    || string.IsNullOrEmpty(novoAssociado.Telefone))
+                    return BadRequest("Dados do associado são obrigatórios.");
 
-            return CreatedAtAction(nameof(ObterPorId), new { id = novoAssociado.Id }, novoAssociado);
+                var associadoExistente = await _associadoService.ObterDadosEValidarCPFePlacaAsync(RemoverMascara(novoAssociado.CPF), novoAssociado.Placa);
+                if (associadoExistente != null)
+                    return Conflict(new { message = "Associado já existe." });
+
+
+                var associadoEntity = new Associado
+                {
+                    Nome = novoAssociado.Nome,
+                    CPF = long.Parse(RemoverMascara(novoAssociado.CPF)),
+                    Placa = novoAssociado.Placa,
+                    Endereco = novoAssociado.Endereco,
+                    Telefone = long.Parse(RemoverMascara(novoAssociado.Telefone))
+                };
+
+                await _associadoService.CriarAssociadoAsync(associadoEntity);
+
+                return CreatedAtAction(nameof(ObterPorId), new { id = novoAssociado.Id }, novoAssociado);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpDelete("deletar/{id}")]
         public async Task<IActionResult> Deletar(int id)
         {
-            var associado = await _associadoService.ObterPeloIdAssociadoAsync(id);
-            if (associado == null)
-                return NotFound(new { message = "Associado não encontrado." });
+            try
+            {
+                var associado = await _associadoService.ObterPeloIdAssociadoAsync(id);
+                if (associado == null)
+                    return NotFound(new { message = "Associado não encontrado." });
 
-            await _associadoService.DeletarAssociadoAsync(id);
+                await _associadoService.DeletarAssociadoAsync(id);
 
-            return Ok(new { message = "Associado excluído com sucesso." });
+                return Ok(new { message = "Associado excluído com sucesso." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> ObterPorId(int id)
         {
-            var associado = await _associadoService.ObterPeloIdAssociadoAsync(id);
-            if (associado == null)
-                return NotFound(new { message = "Associado não encontrado." });
+            try
+            {
+                var associado = await _associadoService.ObterPeloIdAssociadoAsync(id);
+                if (associado == null)
+                    return NotFound(new { message = "Associado não encontrado." });
 
-            return Ok(associado);
+                return Ok(associado);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        private string RemoverMascara(string valor)
+        {
+            return string.IsNullOrEmpty(valor) ? valor : new string(valor.Where(char.IsDigit).ToArray());
         }
     }
 }

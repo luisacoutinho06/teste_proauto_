@@ -4,7 +4,7 @@ namespace ProdutoCadastro.Services.Interface
 {
     public interface IAssociadoService
     {
-        Task<Associado?> ObterDadosAsync(string cpf, string placa);
+        Task<Associado?> ObterPorCpfEPlacaAsync(string cpf, string placa);
         Task<Associado?> ObterDadosEValidarCPFePlacaAsync(string cpf, string placa);
         Task AtualizarEnderecoAsync(int id, string novoEndereco);
         Task<Associado?> ObterPeloIdAssociadoAsync(int id);

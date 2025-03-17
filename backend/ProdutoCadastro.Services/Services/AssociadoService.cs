@@ -8,7 +8,7 @@ namespace ProdutoCadastro.Services.Services
     {
         private readonly IAssociadoRepository _associadoRepository = associadoRepository;
 
-        public async Task<Associado?> ObterDadosAsync(string cpf, string placa)
+        public async Task<Associado?> ObterPorCpfEPlacaAsync(string cpf, string placa)
         {
             return await _associadoRepository.ObterPorCpfEPlacaAsync(cpf, placa);
         }
@@ -41,5 +41,6 @@ namespace ProdutoCadastro.Services.Services
         {
              await _associadoRepository.DeletarAssociadoAsync(id);
         }
+
     }
 }

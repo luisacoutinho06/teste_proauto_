@@ -2,6 +2,7 @@
 using ProautoCadastro.Data;
 using ProdutoCadastro.Data.Context;
 using ProdutoCadastro.Domain.Entities;
+using System.ComponentModel.DataAnnotations;
 
 namespace ProdutoCadastro.Data.Repositories
 {
@@ -11,8 +12,8 @@ namespace ProdutoCadastro.Data.Repositories
 
         public async Task<Associado?> ObterPorCpfEPlacaAsync(string cpf, string placa)
         {
-            cpf = RemoverMascara(cpf);
-            return await _context.Associados.FirstOrDefaultAsync(a => a.CPF == cpf && a.Placa == placa);
+            long cpfFormatado = Int64.Parse(cpf);
+            return await _context.Associados.FirstOrDefaultAsync(a => a.CPF == cpfFormatado && a.Placa == placa);
         }
 
         public async Task AtualizarEnderecoAsync(Associado associado)
@@ -28,8 +29,16 @@ namespace ProdutoCadastro.Data.Repositories
 
         public async Task CriarAssociadoAsync(Associado novoAssociado)
         {
-            novoAssociado.CPF = RemoverMascara(novoAssociado.CPF);
-            novoAssociado.Telefone = RemoverMascara(novoAssociado.Telefone);
+            var context = new ValidationContext(novoAssociado);
+            var results = new List<ValidationResult>();
+
+            bool isValid = Validator.TryValidateObject(novoAssociado, context, results, true);
+
+            if (!isValid)
+            {
+                var erros = string.Join(", ", results.Select(r => r.ErrorMessage));
+                throw new Exception($"Erro de validação: {erros}");
+            }
 
             _context.Associados.Add(novoAssociado);
             await _context.SaveChangesAsync();
@@ -47,10 +56,8 @@ namespace ProdutoCadastro.Data.Repositories
 
         public async Task<Associado?> ObterDadosEValidarCPFePlacaAsync(string cpf, string placa)
         {
-            cpf = RemoverMascara(cpf);
-
             var associadoPorCpf = await _context.Associados
-                .FirstOrDefaultAsync(a => a.CPF == cpf);
+                .FirstOrDefaultAsync(a => a.CPF == long.Parse(cpf));
 
             if (associadoPorCpf != null)
                 return associadoPorCpf; 
@@ -63,12 +70,6 @@ namespace ProdutoCadastro.Data.Repositories
                 return associadoPorPlaca;
 
             return null;
-        }
-
-
-        private string RemoverMascara(string valor)
-        {
-            return string.IsNullOrEmpty(valor) ? valor : new string(valor.Where(char.IsDigit).ToArray());
         }
     }
 }
