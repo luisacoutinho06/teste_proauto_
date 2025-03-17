@@ -45,6 +45,26 @@ namespace ProdutoCadastro.Data.Repositories
             }
         }
 
+        public async Task<Associado?> ObterDadosEValidarCPFePlacaAsync(string cpf, string placa)
+        {
+            cpf = RemoverMascara(cpf);
+
+            var associadoPorCpf = await _context.Associados
+                .FirstOrDefaultAsync(a => a.CPF == cpf);
+
+            if (associadoPorCpf != null)
+                return associadoPorCpf; 
+
+
+            var associadoPorPlaca = await _context.Associados
+                .FirstOrDefaultAsync(a => a.Placa == placa);
+
+            if (associadoPorPlaca != null)
+                return associadoPorPlaca;
+
+            return null;
+        }
+
 
         private string RemoverMascara(string valor)
         {

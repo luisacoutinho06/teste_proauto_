@@ -12,6 +12,10 @@ namespace ProdutoCadastro.Services.Services
         {
             return await _associadoRepository.ObterPorCpfEPlacaAsync(cpf, placa);
         }
+        public async Task<Associado?> ObterDadosEValidarCPFePlacaAsync(string cpf, string placa)
+        {
+            return await _associadoRepository.ObterDadosEValidarCPFePlacaAsync(cpf, placa);
+        }
 
         public async Task AtualizarEnderecoAsync(int id, string novoEndereco)
         {
