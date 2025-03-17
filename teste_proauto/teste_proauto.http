@@ -1,0 +1,49 @@
+@teste_proauto_HostAddress = http://localhost:5279
+
+POST {{teste_proauto_HostAddress}}/api/associado/autenticar
+Content-Type: application/json
+Accept: application/json
+
+{
+    "CPF": "12345678900",
+    "Placa": "ABC1234"
+}
+
+@teste_proauto_HostAddress = http://localhost:5279
+
+PUT {{teste_proauto_HostAddress}}/api/associado/atualizar-endereco/1
+Content-Type: application/json
+Accept: application/json
+
+{
+    "novoEndereco": "Rua Nova, 123, Bairro Centro"
+}
+
+
+
+@teste_proauto_HostAddress = http://localhost:5279
+
+POST {{teste_proauto_HostAddress}}/api/associado/criar
+Content-Type: application/json
+Accept: application/json
+
+{
+    "Nome": "João Silva",
+    "CPF": "12345678900",
+    "Placa": "ABC1234",
+    "Endereco": "Rua Teste, 456",
+    "Telefone": "(11) 1234-5678"
+}
+
+
+@teste_proauto_HostAddress = http://localhost:5279
+
+DELETE {{teste_proauto_HostAddress}}/api/associado/deletar/1
+Accept: application/json
+
+
+
+@teste_proauto_HostAddress = http://localhost:5279
+
+GET {{teste_proauto_HostAddress}}/api/associado/1
+Accept: application/json

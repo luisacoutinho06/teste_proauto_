@@ -1,0 +1,25 @@
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace ProdutoCadastro.Domain.Entities
+{
+    public class Associado
+    {
+        [Key]
+        public int Id { get; set; }
+
+        [Required]
+        public required string Nome { get; set; }
+
+        [Required, StringLength(11)]
+        public required string CPF { get; set; }
+
+        [Required, StringLength(7)]
+        public required string Placa { get; set; }
+
+        [Required]
+        public required string Endereco { get; set; }
+
+        public string? Telefone { get; set; }
+    }
+
+}
