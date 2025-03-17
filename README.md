@@ -18,10 +18,9 @@ Após clonar o repositório, é necessário que realize os seguintes passos:
 **2 -** Insira então o comando 'npm install --legacy-peer-deps'. <br>
 **3 -** Insira então o comando 'npm start'. <br>
 
-**Observações importantes:**
-- **Portas:** Certifique-se de que as portas utilizadas pelo backend e frontend não estejam em conflito com outros serviços.
-- **.env:** Se o frontend ou backend tiver um arquivo .env, configure as variáveis de ambiente necessárias.
-- **Banco de dados:** Se o backend se conectar a um banco de dados, certifique-se de que o banco de dados esteja rodando e configurado corretamente.
+**Observações importantes - caso gere algum erro:**
+- **.env:** Olhar o arquivo .env, configure a variável de ambiente para rodar juntamente com o backend.
+- **appsettings.json:** Certifique-se de que a connection string esteja de acordo com o banco.
 
 
 
