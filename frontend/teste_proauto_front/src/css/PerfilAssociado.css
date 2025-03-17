@@ -1,0 +1,126 @@
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #f4f8fc;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.profileAssociado {
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+  padding: 40px;
+  width: 100%;
+  max-width: 450px;
+  text-align: center;
+}
+
+h2 {
+  color: #0056b3;
+  margin-bottom: 20px;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+input {
+  width: 100%;
+  padding: 15px;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+}
+
+input:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+/* Campos desabilitados */
+input[readonly] {
+  background-color: #f2f2f2;
+  border-color: #ccc;
+  color: #999;
+}
+
+button {
+  width: 100%;
+  padding: 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+p {
+  color: #e74c3c;
+}
+
+.asterisco {
+  color: red;
+}
+
+.profileAssociado label {
+  text-align: left;
+  display: block;
+}
+
+.btn-verde {
+  background-color: #28a745; 
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.btn-vermelho {
+  background-color: #dc3545; 
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.btn-verde:hover {
+  background-color: #218838;
+}
+
+.btn-vermelho:hover {
+  background-color: #c82333;
+}
+
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.btn-verde, .btn-vermelho {
+  flex: 1;
+}
+
+.btn-verde:hover {
+  background-color: #218838;
+}
+
+.btn-vermelho:hover {
+  background-color: #c82333;
+}
